@@ -15,7 +15,7 @@ from torch.autograd import Variable
 ITERS = 1000000  # number of training steps (for the generator)
 
 parser = ArgumentParser()
-parser.add_argument('--render', type=bool, action='store_false')
+parser.add_argument('--render', type=bool, action='store_true')
 parser.add_argument('--iterations', '-n', type=int, default=ITERS)
 parser.add_argument('--batch_size', type=int, default=128)
 args = parser.parse_args()
@@ -26,21 +26,21 @@ BATCH_SIZE = args.batch_size
 z_dim = 10
 X_dim = mnist.train.images.shape[1]
 y_dim = mnist.train.labels.shape[1]
-h_dim = 128
+hidden_dim = 128
 d_step = 3  # discriminator takes 3 steps for every 1 the generator does.
 lr = 1e-3
 
 G = torch.nn.Sequential(
-    torch.nn.Linear(z_dim, h_dim),
+    torch.nn.Linear(z_dim, hidden_dim),
     torch.nn.ReLU(),
-    torch.nn.Linear(h_dim, X_dim),
+    torch.nn.Linear(hidden_dim, X_dim),
     torch.nn.Sigmoid(),
 ).cuda()
 
 D = torch.nn.Sequential(
-    torch.nn.Linear(X_dim, h_dim),
+    torch.nn.Linear(X_dim, hidden_dim),
     torch.nn.ReLU(),
-    torch.nn.Linear(h_dim, 1),
+    torch.nn.Linear(hidden_dim, 1),
 ).cuda()
 
 
@@ -85,7 +85,12 @@ for iter in range(args.iterations):
 
     # Print and plot every now and then
     if iter % 1000 == 0:
-        print('Iter-{}; D_loss: {:.4}; G_loss: {:.4}'.format(iter, D_loss.data[0], G_loss.data[0]))
+        print(
+            'i: {}'.format(iter),
+            'D: {:.4}'.format(D_loss.data[0]),
+            'G: {:.4}'.format(G_loss.data[0]),
+            sep='\n',
+        )
 
         samples = G(z).cpu().data.numpy()[:16]
 
