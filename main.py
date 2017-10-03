@@ -11,23 +11,24 @@ import torch.nn.functional as nn
 import torch.optim as optim
 from tensorflow.examples.tutorials.mnist import input_data
 from torch.autograd import Variable
-from  argparse import ArgumentParser
+
+ITERS = 1000000  # number of training steps (for the generator)
 
 parser = ArgumentParser()
 parser.add_argument('--render', type=bool, action='store_false')
-parser.add_argument('--steps', '-n', type=int, default=)
-args = parser.parse_args() 
+parser.add_argument('--iterations', '-n', type=int, default=ITERS)
+parser.add_argument('--batch_size', type=int, default=128)
+args = parser.parse_args()
 
 # TODO adapt for car image data
 mnist = input_data.read_data_sets('../../MNIST_data', one_hot=True)
-BATCH_SIZE = 128
+BATCH_SIZE = args.batch_size
 z_dim = 10
 X_dim = mnist.train.images.shape[1]
 y_dim = mnist.train.labels.shape[1]
 h_dim = 128
 d_step = 3  # discriminator takes 3 steps for every 1 the generator does.
 lr = 1e-3
-ITERS = 1000000  # number of training steps (for the generator)
 
 G = torch.nn.Sequential(
     torch.nn.Linear(z_dim, h_dim),
@@ -51,7 +52,7 @@ def reset_grads():
 G_optim = optim.Adam(G.parameters(), lr=lr)
 D_optim = optim.Adam(D.parameters(), lr=lr)
 
-for iter in range(ITERS):
+for iter in range(args.iterations):
     #
     for _ in range(d_step):
         # Sample data
