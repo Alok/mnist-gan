@@ -20,6 +20,7 @@ from torch.autograd import Variable
 from torch.nn import BatchNorm1d, Linear, ReLU, Sequential, Sigmoid
 from torch.optim import Adam
 
+
 parser = ArgumentParser()
 parser.add_argument('--render', action='store_true')
 parser.add_argument('--iterations', '-n', type=int, default=1000000)
@@ -76,6 +77,9 @@ def reset_grads():
 G_optim, D_optim = Adam(G.parameters(), lr=lr), Adam(D.parameters(), lr=lr)
 
 if __name__ == '__main__':
+
+    plt.ioff() # avoid error with nohup
+
     for iteration in range(args.iterations):
         #
         for _ in range(DISCRIM_STEPS):
@@ -131,6 +135,6 @@ if __name__ == '__main__':
             plt.savefig('imgs/{}.png'.format(str(iteration)), bbox_inches='tight')
             plt.close(fig)
 
-        if iteration % 10000 == 0:
+        if iteration % 10000 == 0 and iteration != 0:
             torch.save(G, 'data/models/generator')
             torch.save(D, 'data/models/discriminator')
