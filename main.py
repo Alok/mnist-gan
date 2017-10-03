@@ -106,6 +106,8 @@ if __name__ == '__main__':
                 ax.set_xticklabels([])
                 ax.set_yticklabels([])
                 ax.set_aspect('equal')
+                # Note to self: Need `imshow` or else plot is just white background.
+                plt.imshow(sample.reshape(28, 28), cmap='Greys_r')
 
             if not os.path.exists('imgs/'):
                 os.makedirs('imgs/')
