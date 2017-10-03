@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import division, print_function
+
 import os
 from argparse import ArgumentParser
 
@@ -54,8 +56,7 @@ def reset_grads():
     D.zero_grad()
 
 
-G_optim = Adam(G.parameters(), lr=lr)
-D_optim = Adam(D.parameters(), lr=lr)
+G_optim, D_optim = Adam(G.parameters(), lr=lr), Adam(D.parameters(), lr=lr)
 
 if __name__ == '__main__':
     for iter in range(args.iterations):
@@ -63,15 +64,12 @@ if __name__ == '__main__':
         for _ in range(d_step):
             # Sample data
             z = Variable(torch.randn(BATCH_SIZE, z_dim)).cuda()
-            X = torch.from_numpy(mnist.train.next_batch(BATCH_SIZE)[0]).pin_memory()
-            X = Variable(X).cuda()
+            X = Variable(torch.from_numpy(mnist.train.next_batch(BATCH_SIZE)[0]).pin_memory()
+                         ).cuda()
 
             # Discriminator
-            G_sample = G(z)
-            D_real = D(X)
-            D_fake = D(G_sample)
 
-            D_loss = 0.5 * (torch.mean((D_real - 1) ** 2) + torch.mean(D_fake ** 2))
+            D_loss = (torch.mean((D(X) - 1) ** 2) + torch.mean(D(G(z)) ** 2)) / 2
 
             D_loss.backward()
             D_optim.step()
@@ -80,10 +78,7 @@ if __name__ == '__main__':
         # Generator
         z = Variable(torch.randn(BATCH_SIZE, z_dim)).cuda()
 
-        G_sample = G(z)
-        D_fake = D(G_sample)
-
-        G_loss = 0.5 * torch.mean((D_fake - 1) ** 2)
+        G_loss = torch.mean((D(G(z)) - 1) ** 2) / 2
 
         G_loss.backward()
         G_optim.step()
@@ -95,6 +90,7 @@ if __name__ == '__main__':
                 'i: {}'.format(iter),
                 'D: {:.4}'.format(D_loss.data[0]),
                 'G: {:.4}'.format(G_loss.data[0]),
+                72 * '-',  # Separator for each print summary
                 sep='\n',
             )
 
