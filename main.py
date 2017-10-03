@@ -93,9 +93,8 @@ for iter in range(ITERS):
             ax.set_yticklabels([])
             ax.set_aspect('equal')
 
-        if not os.path.exists('out/'):
-            os.makedirs('out/')
+        if not os.path.exists('imgs/'):
+            os.makedirs('imgs/')
 
-        plt.savefig('out/{}.png'.format(str(cnt).zfill(3)), bbox_inches='tight')
-        cnt += 1
+        plt.savefig('imgs/{}.png'.format(str(iter)), bbox_inches='tight')
         plt.close(fig)
