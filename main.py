@@ -11,6 +11,12 @@ import torch.nn.functional as nn
 import torch.optim as optim
 from tensorflow.examples.tutorials.mnist import input_data
 from torch.autograd import Variable
+from  argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument('--render', type=bool, action='store_false')
+parser.add_argument('--steps', '-n', type=int, default=)
+args = parser.parse_args() 
 
 # TODO adapt for car image data
 mnist = input_data.read_data_sets('../../MNIST_data', one_hot=True)
