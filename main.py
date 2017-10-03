@@ -1,4 +1,5 @@
 import os
+from argparse import ArgumentParser
 
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
@@ -10,21 +11,17 @@ import torch.nn.functional as nn
 import torch.optim as optim
 from tensorflow.examples.tutorials.mnist import input_data
 from torch.autograd import Variable
-from  argparse import ArgumentParser
-
-parser = ArgumentParser
-parser.add_argument()
 
 # TODO adapt for car image data
 mnist = input_data.read_data_sets('../../MNIST_data', one_hot=True)
-BATCH_SIZE = 1024
+BATCH_SIZE = 128
 z_dim = 10
 X_dim = mnist.train.images.shape[1]
 y_dim = mnist.train.labels.shape[1]
 h_dim = 128
-cnt = 0
 d_step = 3  # discriminator takes 3 steps for every 1 the generator does.
 lr = 1e-3
+ITERS = 1000000  # number of training steps (for the generator)
 
 G = torch.nn.Sequential(
     torch.nn.Linear(z_dim, h_dim),
@@ -48,13 +45,13 @@ def reset_grads():
 G_optim = optim.Adam(G.parameters(), lr=lr)
 D_optim = optim.Adam(D.parameters(), lr=lr)
 
-for iter in range(1000000):
+for iter in range(ITERS):
     #
     for _ in range(d_step):
         # Sample data
         z = Variable(torch.randn(BATCH_SIZE, z_dim)).cuda()
-        X, _ = mnist.train.next_batch(BATCH_SIZE)
-        X = Variable(torch.from_numpy(X)).cuda()
+        X = torch.from_numpy(mnist.train.next_batch(BATCH_SIZE)[0]).pin_memory()
+        X = Variable(X).cuda()
 
         # Discriminator
         G_sample = G(z)
