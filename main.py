@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt  # isort:skip
 parser = ArgumentParser()
 parser.add_argument('--render', action='store_true')
 parser.add_argument('--iterations', '-n', type=int, default=1000000)
-parser.add_argument('--batch_size', type=int, default=128)
+parser.add_argument('--batch_size', '-b', type=int, default=128)
 parser.add_argument('--log_every', '-l', type=int, default=1000)
 parser.add_argument('--new', action='store_true')
 parser.add_argument('--save', action='store_true')
