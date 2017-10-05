@@ -59,21 +59,17 @@ def create_generator():
     G = Sequential(
         Linear(Z_DIM, HIDDEN_DIM),
         ACTIVATION(),
-
         Linear(HIDDEN_DIM, HIDDEN_DIM),
         ACTIVATION(),
         BatchNorm1d(HIDDEN_DIM),
-
-        Linear(HIDDEN_DIM, HIDDEN_DIM),
-        ACTIVATION(),
-        BatchNorm1d(HIDDEN_DIM),
-        Dropout(),
-
         Linear(HIDDEN_DIM, HIDDEN_DIM),
         ACTIVATION(),
         BatchNorm1d(HIDDEN_DIM),
         Dropout(),
-
+        Linear(HIDDEN_DIM, HIDDEN_DIM),
+        ACTIVATION(),
+        BatchNorm1d(HIDDEN_DIM),
+        Dropout(),
         Linear(HIDDEN_DIM, X_DIM),
         Sigmoid(),
     ).cuda()
@@ -86,15 +82,12 @@ def create_discriminator():
         Linear(X_DIM, HIDDEN_DIM),
         ACTIVATION(),
         Dropout(),
-
         Linear(HIDDEN_DIM, HIDDEN_DIM),
         ACTIVATION(),
         Dropout(),
-
         Linear(HIDDEN_DIM, HIDDEN_DIM),
         ACTIVATION(),
         Dropout(),
-
         Linear(HIDDEN_DIM, 1),
     ).cuda()
 
@@ -114,7 +107,8 @@ def reset_grads():
     D.zero_grad()
 
 
-G_optim, D_optim = Adam(G.parameters()), Adam(D.parameters())
+# reducing discriminator learning rate seems to help, at least based on one experiment
+G_optim, D_optim = Adam(G.parameters()), Adam(D.parameters(), lr=0.0002)
 
 if __name__ == '__main__':
 
